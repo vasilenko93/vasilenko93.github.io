@@ -4,3 +4,5 @@
 
 layout: home
 ---
+
+See the footer for contact information

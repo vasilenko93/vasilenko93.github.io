@@ -27,6 +27,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 permalink: /:year/:month/:day/:title:output_ext
 twitter_username: vasalex93
 github_username:  vasilenko93
+linkedin_username: aleksandrvasilenko
 
 # Build settings
 theme: minima
