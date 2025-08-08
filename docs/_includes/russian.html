@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russian Vocabulary Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        .card-face {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 dark:text-white">Russian Vocabulary</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">1000 Most Common Words</p>
+        </header>
+
+        <main>
+            <!-- Flashcard Container -->
+            <div id="flashcard" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 transition-transform duration-300 ease-in-out hover:scale-105">
+                <!-- Russian Word -->
+                <div class="text-center mb-6">
+                    <h2 id="russian-word" class="text-5xl font-semibold text-blue-600 dark:text-blue-400 mb-2"></h2>
+                    <p id="english-word" class="text-2xl text-gray-500 dark:text-gray-400"></p>
+                </div>
+
+                <!-- Example Sentences -->
+                <div class="space-y-4">
+                    <div>
+                        <p id="example-ru-1" class="text-lg font-medium"></p>
+                        <p id="example-en-1" class="text-md text-gray-500 dark:text-gray-400 italic"></p>
+                    </div>
+                    <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+                    <div>
+                        <p id="example-ru-2" class="text-lg font-medium"></p>
+                        <p id="example-en-2" class="text-md text-gray-500 dark:text-gray-400 italic"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="text-center mt-8">
+                <button id="new-word-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-700 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
+                    New Word
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Vocabulary Data -->
+    <script>
+        // This simulates a separate data file. You can expand this list with more words.
+        const vocabulary = [
+    {
+        "russian": "человек",
+        "english": "person",
+        "example_ru1": "Этот человек мой друг.",
+        "example_en1": "This person is my friend.",
+        "example_ru2": "Сколько человек было на встрече?",
+        "example_en2": "How many people were at the meeting?"
+    },
+    {
+        "russian": "время",
+        "english": "time",
+        "example_ru1": "У меня нет времени.",
+        "example_en1": "I don't have time.",
+        "example_ru2": "Какое сейчас время?",
+        "example_en2": "What time is it now?"
+    },
+    {
+        "russian": "год",
+        "english": "year",
+        "example_ru1": "В этом году я поеду в отпуск.",
+        "example_en1": "This year I will go on vacation.",
+        "example_ru2": "Она родилась в 1990 году.",
+        "example_en2": "She was born in the year 1990."
+    },
+    {
+        "russian": "день",
+        "english": "day",
+        "example_ru1": "Сегодня хороший день.",
+        "example_en1": "Today is a good day.",
+        "example_ru2": "Увидимся через пару дней.",
+        "example_en2": "See you in a couple of days."
+    },
+    {
+        "russian": "жизнь",
+        "english": "life",
+        "example_ru1": "Это лучший день в моей жизни.",
+        "example_en1": "This is the best day of my life.",
+        "example_ru2": "Жизнь коротка.",
+        "example_en2": "Life is short."
+    },
+    {
+        "russian": "рука",
+        "english": "hand, arm",
+        "example_ru1": "Он пожал мне руку.",
+        "example_en1": "He shook my hand.",
+        "example_ru2": "У меня болит правая рука.",
+        "example_en2": "My right arm hurts."
+    },
+    {
+        "russian": "работа",
+        "english": "work, job",
+        "example_ru1": "Я иду на работу.",
+        "example_en1": "I'm going to work.",
+        "example_ru2": "У него интересная работа.",
+        "example_en2": "He has an interesting job."
+    },
+    {
+        "russian": "слово",
+        "english": "word",
+        "example_ru1": "Я не понимаю это слово.",
+        "example_en1": "I don't understand this word.",
+        "example_ru2": "Даю тебе свое слово.",
+        "example_en2": "I give you my word."
+    },
+    {
+        "russian": "место",
+        "english": "place",
+        "example_ru1": "Это мое любимое место в городе.",
+        "example_en1": "This is my favorite place in the city.",
+        "example_ru2": "Здесь нет свободного места.",
+        "example_en2": "There is no free space here."
+    },
+    {
+        "russian": "вопрос",
+        "english": "question",
+        "example_ru1": "У меня есть вопрос.",
+        "example_en1": "I have a question.",
+        "example_ru2": "Это сложный вопрос.",
+        "example_en2": "That is a difficult question."
+    },
+    {
+        "russian": "лицо",
+        "english": "face",
+        "example_ru1": "У нее красивое лицо.",
+        "example_en1": "She has a beautiful face.",
+        "example_ru2": "Я знаю это лицо!",
+        "example_en2": "I know that face!"
+    },
+    {
+        "russian": "друг",
+        "english": "friend",
+        "example_ru1": "Он мой лучший друг.",
+        "example_en1": "He is my best friend.",
+        "example_ru2": "У меня много друзей.",
+        "example_en2": "I have many friends."
+    },
+    {
+        "russian": "дом",
+        "english": "house, home",
+        "example_ru1": "Я хочу домой.",
+        "example_en1": "I want to go home.",
+        "example_ru2": "Это большой дом.",
+        "example_en2": "This is a big house."
+    },
+    {
+        "russian": "сторона",
+        "english": "side",
+        "example_ru1": "Посмотри на другую сторону улицы.",
+        "example_en1": "Look at the other side of the street.",
+        "example_ru2": "С одной стороны, это хорошо.",
+        "example_en2": "On the one hand, this is good."
+    },
+    {
+        "russian": "нога",
+        "english": "leg, foot",
+        "example_ru1": "Я сломал ногу.",
+        "example_en1": "I broke my leg.",
+        "example_ru2": "У меня замерзли ноги.",
+        "example_en2": "My feet are cold."
+    },
+    {
+        "russian": "мир",
+        "english": "world, peace",
+        "example_ru1": "Мы хотим мира во всем мире.",
+        "example_en1": "We want peace in the whole world.",
+        "example_ru2": "Он путешествует по всему миру.",
+        "example_en2": "He travels all over the world."
+    },
+    {
+        "russian": "случай",
+        "english": "case, occasion, incident",
+        "example_ru1": "Это был несчастный случай.",
+        "example_en1": "It was an accident.",
+        "example_ru2": "На всякий случай, возьми зонт.",
+        "example_en2": "Just in case, take an umbrella."
+    },
+    {
+        "russian": "голова",
+        "english": "head",
+        "example_ru1": "У меня болит голова.",
+        "example_en1": "I have a headache.",
+        "example_ru2": "Он умная голова.",
+        "example_en2": "He is a smart person (lit. smart head)."
+    },
+    {
+        "russian": "ребенок",
+        "english": "child",
+        "example_ru1": "В парке много детей.",
+        "example_en1": "There are many children in the park.",
+        "example_ru2": "Это мой ребенок.",
+        "example_en2": "This is my child."
+    },
+    {
+        "russian": "сила",
+        "english": "strength, force, power",
+        "example_ru1": "У него большая физическая сила.",
+        "example_en1": "He has great physical strength.",
+        "example_ru2": "Да пребудет с тобой Сила.",
+        "example_en2": "May the Force be with you."
+    },
+    {
+        "russian": "конец",
+        "english": "end",
+        "example_ru1": "Это конец фильма.",
+        "example_en1": "This is the end of the movie.",
+        "example_ru2": "В конце концов, все будет хорошо.",
+        "example_en2": "In the end, everything will be fine."
+    },
+    {
+        "russian": "система",
+        "english": "system",
+        "example_ru1": "Это сложная система.",
+        "example_en1": "This is a complex system.",
+        "example_ru2": "Нам нужна новая система.",
+        "example_en2": "We need a new system."
+    },
+    {
+        "russian": "часть",
+        "english": "part",
+        "example_ru1": "Это только часть проблемы.",
+        "example_en1": "This is only part of the problem.",
+        "example_ru2": "Я прочитал первую часть книги.",
+        "example_en2": "I read the first part of the book."
+    },
+    {
+        "russian": "город",
+        "english": "city, town",
+        "example_ru1": "Москва - большой город.",
+        "example_en1": "Moscow is a big city.",
+        "example_ru2": "Я живу в маленьком городе.",
+        "example_en2": "I live in a small town."
+    },
+    {
+        "russian": "вода",
+        "english": "water",
+        "example_ru1": "Дай мне стакан воды, пожалуйста.",
+        "example_en1": "Give me a glass of water, please.",
+        "example_ru2": "Вода в реке холодная.",
+        "example_en2": "The water in the river is cold."
+    },
+    {
+        "russian": "стол",
+        "english": "table, desk",
+        "example_ru1": "Книга лежит на столе.",
+        "example_en1": "The book is on the table.",
+        "example_ru2": "Я работаю за этим столом.",
+        "example_en2": "I work at this desk."
+    },
+    {
+        "russian": "страна",
+        "english": "country",
+        "example_ru1": "Россия - большая страна.",
+        "example_en1": "Russia is a large country.",
+        "example_ru2": "В какой стране ты живешь?",
+        "example_en2": "What country do you live in?"
+    },
+    {
+        "russian": "язык",
+        "english": "language, tongue",
+        "example_ru1": "Я изучаю русский язык.",
+        "example_en1": "I am learning the Russian language.",
+        "example_ru2": "Он обжег язык горячим чаем.",
+        "example_en2": "He burned his tongue with hot tea."
+    },
+    {
+        "russian": "отец",
+        "english": "father",
+        "example_ru1": "Мой отец - инженер.",
+        "example_en1": "My father is an engineer.",
+        "example_ru2": "Как зовут твоего отца?",
+        "example_en2": "What is your father's name?"
+    },
+    {
+        "russian": "мать",
+        "english": "mother",
+        "example_ru1": "Моя мать работает врачом.",
+        "example_en1": "My mother works as a doctor.",
+        "example_ru2": "Я люблю свою мать.",
+        "example_en2": "I love my mother."
+    },
+    {
+        "russian": "книга",
+        "english": "book",
+        "example_ru1": "Я читаю интересную книгу.",
+        "example_en1": "I am reading an interesting book.",
+        "example_ru2": "Где моя книга?",
+        "example_en2": "Where is my book?"
+    },
+    {
+        "russian": "начало",
+        "english": "beginning, start",
+        "example_ru1": "Это только начало.",
+        "example_en1": "This is just the beginning.",
+        "example_ru2": "Начало фильма было скучным.",
+        "example_en2": "The beginning of the movie was boring."
+    },
+    {
+        "russian": "неделя",
+        "english": "week",
+        "example_ru1": "В неделе семь дней.",
+        "example_en1": "There are seven days in a week.",
+        "example_ru2": "Увидимся на следующей неделе.",
+        "example_en2": "See you next week."
+    },
+    {
+        "russian": "ночь",
+        "english": "night",
+        "example_ru1": "Я плохо спал ночью.",
+        "example_en1": "I slept poorly last night.",
+        "example_ru2": "Спокойной ночи!",
+        "example_en2": "Good night!"
+    },
+    {
+        "russian": "дело",
+        "english": "business, matter, affair",
+        "example_ru1": "У меня много дел сегодня.",
+        "example_en1": "I have a lot of things to do today.",
+        "example_ru2": "В чем дело?",
+        "example_en2": "What's the matter?"
+    },
+    {
+        "russian": "быть",
+        "english": "to be",
+        "example_ru1": "Быть или не быть, вот в чем вопрос.",
+        "example_en1": "To be or not to be, that is the question.",
+        "example_ru2": "Он хочет быть врачом.",
+        "example_en2": "He wants to be a doctor."
+    },
+    {
+        "russian": "делать",
+        "english": "to do, to make",
+        "example_ru1": "Что ты делаешь?",
+        "example_en1": "What are you doing?",
+        "example_ru2": "Я делаю домашнее задание.",
+        "example_en2": "I am doing my homework."
+    },
+    {
+        "russian": "говорить",
+        "english": "to speak, to say, to talk",
+        "example_ru1": "Вы говорите по-английски?",
+        "example_en1": "Do you speak English?",
+        "example_ru2": "Он говорит слишком быстро.",
+        "example_en2": "He speaks too fast."
+    },
+    {
+        "russian": "мочь",
+        "english": "to be able, can",
+        "example_ru1": "Я могу тебе помочь.",
+        "example_en1": "I can help you.",
+        "example_ru2": "Ты можешь это сделать?",
+        "example_en2": "Can you do this?"
+    },
+    {
+        "russian": "знать",
+        "english": "to know",
+        "example_ru1": "Я не знаю.",
+        "example_en1": "I don't know.",
+        "example_ru2": "Ты знаешь, где он живет?",
+        "example_en2": "Do you know where he lives?"
+    },
+    {
+        "russian": "видеть",
+        "english": "to see",
+        "example_ru1": "Я тебя вижу.",
+        "example_en1": "I see you.",
+        "example_ru2": "Ты видел новый фильм?",
+        "example_en2": "Have you seen the new movie?"
+    },
+    {
+        "russian": "идти",
+        "english": "to go, to walk (unidirectional)",
+        "example_ru1": "Я иду в магазин.",
+        "example_en1": "I am going to the store.",
+        "example_ru2": "Идет дождь.",
+        "example_en2": "It is raining (lit. rain is going)."
+    },
+    {
+        "russian": "стоять",
+        "english": "to stand",
+        "example_ru1": "Он стоит у окна.",
+        "example_en1": "He is standing by the window.",
+        "example_ru2": "Машина стоит на парковке.",
+        "example_en2": "The car is in the parking lot."
+    },
+    {
+        "russian": "думать",
+        "english": "to think",
+        "example_ru1": "Я думаю, это хорошая идея.",
+        "example_en1": "I think it's a good idea.",
+        "example_ru2": "О чем ты думаешь?",
+        "example_en2": "What are you thinking about?"
+    },
+    {
+        "russian": "спросить",
+        "english": "to ask (perfective)",
+        "example_ru1": "Я хочу спросить тебя кое-что.",
+        "example_en1": "I want to ask you something.",
+        "example_ru2": "Он спросил, который час.",
+        "example_en2": "He asked what time it was."
+    },
+    {
+        "russian": "жить",
+        "english": "to live",
+        "example_ru1": "Где ты живешь?",
+        "example_en1": "Where do you live?",
+        "example_ru2": "Я хочу жить у моря.",
+        "example_en2": "I want to live by the sea."
+    },
+    {
+        "russian": "смотреть",
+        "english": "to look, to watch",
+        "example_ru1": "Я люблю смотреть фильмы.",
+        "example_en1": "I like to watch movies.",
+        "example_ru2": "Посмотри на меня!",
+        "example_en2": "Look at me!"
+    },
+    {
+        "russian": "сидеть",
+        "english": "to sit",
+        "example_ru1": "Я сижу на стуле.",
+        "example_en1": "I am sitting on a chair.",
+        "example_ru2": "Можно здесь сесть?",
+        "example_en2": "May I sit here?"
+    },
+    {
+        "russian": "понимать",
+        "english": "to understand",
+        "example_ru1": "Я не понимаю.",
+        "example_en1": "I don't understand.",
+        "example_ru2": "Теперь я все понимаю.",
+        "example_en2": "Now I understand everything."
+    },
+    {
+        "russian": "иметь",
+        "english": "to have",
+        "example_ru1": "Я хочу иметь собаку.",
+        "example_en1": "I want to have a dog.",
+        "example_ru2": "Он имеет право это знать.",
+        "example_en2": "He has the right to know this."
+    },
+    {
+        "russian": "работать",
+        "english": "to work",
+        "example_ru1": "Где ты работаешь?",
+        "example_en1": "Where do you work?",
+        "example_ru2": "Компьютер не работает.",
+        "example_en2": "The computer is not working."
+    },
+    {
+        "russian": "любить",
+        "english": "to love",
+        "example_ru1": "Я тебя люблю.",
+        "example_en1": "I love you.",
+        "example_ru2": "Я люблю читать.",
+        "example_en2": "I love to read."
+    },
+    {
+        "russian": "сказать",
+        "english": "to say, to tell (perfective)",
+        "example_ru1": "Что ты сказал?",
+        "example_en1": "What did you say?",
+        "example_ru2": "Скажи мне правду.",
+        "example_en2": "Tell me the truth."
+    },
+    {
+        "russian": "хотеть",
+        "english": "to want",
+        "example_ru1": "Я хочу пить.",
+        "example_en1": "I want to drink.",
+        "example_ru2": "Чего ты хочешь?",
+        "example_en2": "What do you want?"
+    },
+    {
+        "russian": "хороший",
+        "english": "good",
+        "example_ru1": "Это хороший фильм.",
+        "example_en1": "This is a good movie.",
+        "example_ru2": "У меня сегодня хороший день.",
+        "example_en2": "I'm having a good day today."
+    },
+    {
+        "russian": "новый",
+        "english": "new",
+        "example_ru1": "У меня новая машина.",
+        "example_en1": "I have a new car.",
+        "example_ru2": "Это новый ресторан.",
+        "example_en2": "This is a new restaurant."
+    },
+    {
+        "russian": "большой",
+        "english": "big, large",
+        "example_ru1": "Это очень большой дом.",
+        "example_en1": "This is a very big house.",
+        "example_ru2": "У него большие проблемы.",
+        "example_en2": "He has big problems."
+    },
+    {
+        "russian": "старый",
+        "english": "old",
+        "example_ru1": "Мой дедушка очень старый.",
+        "example_en1": "My grandfather is very old.",
+        "example_ru2": "Это старая книга.",
+        "example_en2": "This is an old book."
+    },
+    {
+        "russian": "высокий",
+        "english": "high, tall",
+        "example_ru1": "Это высокое здание.",
+        "example_en1": "This is a tall building.",
+        "example_ru2": "Он высокого роста.",
+        "example_en2": "He is tall."
+    },
+    {
+        "russian": "маленький",
+        "english": "small, little",
+        "example_ru1": "У меня маленькая собака.",
+        "example_en1": "I have a small dog.",
+        "example_ru2": "Это маленький город.",
+        "example_en2": "This is a small town."
+    },
+    {
+        "russian": "плохой",
+        "english": "bad",
+        "example_ru1": "Сегодня плохая погода.",
+        "example_en1": "The weather is bad today.",
+        "example_ru2": "Это плохая идея.",
+        "example_en2": "This is a bad idea."
+    },
+    {
+        "russian": "русский",
+        "english": "Russian",
+        "example_ru1": "Я говорю по-русски.",
+        "example_en1": "I speak Russian.",
+        "example_ru2": "Русская культура очень богата.",
+        "example_en2": "Russian culture is very rich."
+    },
+    {
+        "russian": "каждый",
+        "english": "every, each",
+        "example_ru1": "Я бегаю каждый день.",
+        "example_en1": "I run every day.",
+        "example_ru2": "Каждый человек это знает.",
+        "example_en2": "Every person knows this."
+    },
+    {
+        "russian": "молодой",
+        "english": "young",
+        "example_ru1": "Он еще очень молодой.",
+        "example_en1": "He is still very young.",
+        "example_ru2": "Молодые люди любят музыку.",
+        "example_en2": "Young people love music."
+    },
+    {
+        "russian": "последний",
+        "english": "last, final",
+        "example_ru1": "Это последний шанс.",
+        "example_en1": "This is the last chance.",
+        "example_ru2": "Кто последний в очереди?",
+        "example_en2": "Who is last in line?"
+    },
+    {
+        "russian": "красивый",
+        "english": "beautiful, handsome",
+        "example_ru1": "Какой красивый закат!",
+        "example_en1": "What a beautiful sunset!",
+        "example_ru2": "У нее красивые глаза.",
+        "example_en2": "She has beautiful eyes."
+    },
+    {
+        "russian": "трудный",
+        "english": "difficult, hard",
+        "example_ru1": "Это был трудный год.",
+        "example_en1": "It was a difficult year.",
+        "example_ru2": "Это очень трудная задача.",
+        "example_en2": "This is a very difficult task."
+    },
+    {
+        "russian": "простой",
+        "english": "simple, easy",
+        "example_ru1": "Это простой вопрос.",
+        "example_en1": "This is a simple question.",
+        "example_ru2": "Решение очень простое.",
+        "example_en2": "The solution is very simple."
+    },
+    {
+        "russian": "важный",
+        "english": "important",
+        "example_ru1": "Это очень важная встреча.",
+        "example_en1": "This is a very important meeting.",
+        "example_ru2": "Самое важное - это здоровье.",
+        "example_en2": "The most important thing is health."
+    },
+    {
+        "russian": "интересный",
+        "english": "interesting",
+        "example_ru1": "Это очень интересная книга.",
+        "example_en1": "This is a very interesting book.",
+        "example_ru2": "Он интересный собеседник.",
+        "example_en2": "He is an interesting conversationalist."
+    },
+    {
+        "russian": "черный",
+        "english": "black",
+        "example_ru1": "У меня черная кошка.",
+        "example_en1": "I have a black cat.",
+        "example_ru2": "Он носит черную одежду.",
+        "example_en2": "He wears black clothes."
+    },
+    {
+        "russian": "белый",
+        "english": "white",
+        "example_ru1": "Зимой снег белый.",
+        "example_en1": "In winter, the snow is white.",
+        "example_ru2": "Я купил белую рубашку.",
+        "example_en2": "I bought a white shirt."
+    },
+    {
+        "russian": "красный",
+        "english": "red",
+        "example_ru1": "Красная площадь находится в Москве.",
+        "example_en1": "The Red Square is in Moscow.",
+        "example_ru2": "Она любит красные розы.",
+        "example_en2": "She loves red roses."
+    },
+    {
+        "russian": "я",
+        "english": "I",
+        "example_ru1": "Я студент.",
+        "example_en1": "I am a student.",
+        "example_ru2": "Я живу в России.",
+        "example_en2": "I live in Russia."
+    },
+    {
+        "russian": "ты",
+        "english": "you (informal)",
+        "example_ru1": "Как ты?",
+        "example_en1": "How are you?",
+        "example_ru2": "Где ты работаешь?",
+        "example_en2": "Where do you work?"
+    },
+    {
+        "russian": "он",
+        "english": "he",
+        "example_ru1": "Он мой брат.",
+        "example_en1": "He is my brother.",
+        "example_ru2": "Что он сказал?",
+        "example_en2": "What did he say?"
+    },
+    {
+        "russian": "она",
+        "english": "she",
+        "example_ru1": "Она очень умная.",
+        "example_en1": "She is very smart.",
+        "example_ru2": "Где она?",
+        "example_en2": "Where is she?"
+    },
+    {
+        "russian": "оно",
+        "english": "it",
+        "example_ru1": "Солнце светит. Оно яркое.",
+        "example_en1": "The sun is shining. It is bright.",
+        "example_ru2": "Яблоко упало. Оно было спелым.",
+        "example_en2": "The apple fell. It was ripe."
+    },
+    {
+        "russian": "мы",
+        "english": "we",
+        "example_ru1": "Мы идем в кино.",
+        "example_en1": "We are going to the cinema.",
+        "example_ru2": "Мы друзья.",
+        "example_en2": "We are friends."
+    },
+    {
+        "russian": "вы",
+        "english": "you (formal/plural)",
+        "example_ru1": "Как вы поживаете?",
+        "example_en1": "How are you? (formal)",
+        "example_ru2": "Вы готовы?",
+        "example_en2": "Are you (plural) ready?"
+    },
+    {
+        "russian": "они",
+        "english": "they",
+        "example_ru1": "Они живут в соседнем доме.",
+        "example_en1": "They live in the next house.",
+        "example_ru2": "Что они делают?",
+        "example_en2": "What are they doing?"
+    },
+    {
+        "russian": "это",
+        "english": "this is, that is, it is",
+        "example_ru1": "Что это?",
+        "example_en1": "What is this?",
+        "example_ru2": "Это мой дом.",
+        "example_en2": "This is my house."
+    },
+    {
+        "russian": "весь",
+        "english": "all, whole",
+        "example_ru1": "Я работал весь день.",
+        "example_en1": "I worked all day.",
+        "example_ru2": "Весь мир у его ног.",
+        "example_en2": "The whole world is at his feet."
+    },
+    {
+        "russian": "свой",
+        "english": "one's own",
+        "example_ru1": "Я люблю свою работу.",
+        "example_en1": "I love my (own) job.",
+        "example_ru2": "У каждого свое мнение.",
+        "example_en2": "Everyone has their own opinion."
+    },
+    {
+        "russian": "который",
+        "english": "which, who, that",
+        "example_ru1": "Это книга, которую я читал.",
+        "example_en1": "This is the book that I read.",
+        "example_ru2": "Человек, который пришел вчера, был моим другом.",
+        "example_en2": "The person who came yesterday was my friend."
+    },
+    {
+        "russian": "так",
+        "english": "so, thus, like that",
+        "example_ru1": "Почему ты так думаешь?",
+        "example_en1": "Why do you think so?",
+        "example_ru2": "Сделай вот так.",
+        "example_en2": "Do it like this."
+    },
+    {
+        "russian": "еще",
+        "english": "still, yet, else, more",
+        "example_ru1": "Ты еще здесь?",
+        "example_en1": "Are you still here?",
+        "example_ru2": "Хочешь еще чаю?",
+        "example_en2": "Do you want more tea?"
+    },
+    {
+        "russian": "уже",
+        "english": "already",
+        "example_ru1": "Я уже поел.",
+        "example_en1": "I have already eaten.",
+        "example_ru2": "Уже поздно.",
+        "example_en2": "It's already late."
+    },
+    {
+        "russian": "очень",
+        "english": "very",
+        "example_ru1": "Я очень устал.",
+        "example_en1": "I am very tired.",
+        "example_ru2": "Это очень интересно.",
+        "example_en2": "This is very interesting."
+    },
+    {
+        "russian": "здесь",
+        "english": "here",
+        "example_ru1": "Я живу здесь.",
+        "example_en1": "I live here.",
+        "example_ru2": "Что ты здесь делаешь?",
+        "example_en2": "What are you doing here?"
+    },
+    {
+        "russian": "там",
+        "english": "there",
+        "example_ru1": "Мой дом там.",
+        "example_en1": "My house is there.",
+        "example_ru2": "Там никого нет.",
+        "example_en2": "There is no one there."
+    },
+    {
+        "russian": "когда",
+        "english": "when",
+        "example_ru1": "Когда ты придешь?",
+        "example_en1": "When will you come?",
+        "example_ru2": "Я не знаю, когда он вернется.",
+        "example_en2": "I don't know when he will return."
+    },
+    {
+        "russian": "где",
+        "english": "where",
+        "example_ru1": "Где находится ближайший банк?",
+        "example_en1": "Where is the nearest bank?",
+        "example_ru2": "Я не знаю, где я.",
+        "example_en2": "I don't know where I am."
+    },
+    {
+        "russian": "как",
+        "english": "how, as",
+        "example_ru1": "Как дела?",
+        "example_en1": "How are things?",
+        "example_ru2": "Он работает как профессионал.",
+        "example_en2": "He works as a professional."
+    },
+    {
+        "russian": "потому что",
+        "english": "because",
+        "example_ru1": "Я устал, потому что много работал.",
+        "example_en1": "I am tired because I worked a lot.",
+        "example_ru2": "Она плакала, потому что была расстроена.",
+        "example_en2": "She was crying because she was upset."
+    },
+    {
+        "russian": "чтобы",
+        "english": "in order to, so that",
+        "example_ru1": "Я пришел, чтобы помочь.",
+        "example_en1": "I came in order to help.",
+        "example_ru2": "Говори громче, чтобы все слышали.",
+        "example_en2": "Speak louder so that everyone can hear."
+    },
+    {
+        "russian": "если",
+        "english": "if",
+        "example_ru1": "Если пойдет дождь, мы останемся дома.",
+        "example_en1": "If it rains, we will stay home.",
+        "example_ru2": "Что, если я не согласен?",
+        "example_en2": "What if I don't agree?"
+    },
+    {
+        "russian": "да",
+        "english": "yes",
+        "example_ru1": "Ты пойдешь с нами? - Да.",
+        "example_en1": "Will you go with us? - Yes.",
+        "example_ru2": "Да, я согласен.",
+        "example_en2": "Yes, I agree."
+    },
+    {
+        "russian": "нет",
+        "english": "no, not",
+        "example_ru1": "У меня нет денег.",
+        "example_en1": "I have no money.",
+        "example_ru2": "Ты хочешь есть? - Нет.",
+        "example_en2": "Do you want to eat? - No."
+    },
+    {
+        "russian": "здравствуйте",
+        "english": "hello (formal)",
+        "example_ru1": "Здравствуйте, Иван Петрович!",
+        "example_en1": "Hello, Ivan Petrovich!",
+        "example_ru2": "Здравствуйте, могу я вам помочь?",
+        "example_en2": "Hello, may I help you?"
+    },
+    {
+        "russian": "привет",
+        "english": "hi (informal)",
+        "example_ru1": "Привет, как дела?",
+        "example_en1": "Hi, how are you?",
+        "example_ru2": "Привет всем!",
+        "example_en2": "Hi everyone!"
+    },
+    {
+        "russian": "до свидания",
+        "english": "goodbye",
+        "example_ru1": "Спасибо, до свидания!",
+        "example_en1": "Thank you, goodbye!",
+        "example_ru2": "До свидания, увидимся завтра.",
+        "example_en2": "Goodbye, see you tomorrow."
+    },
+    {
+        "russian": "пока",
+        "english": "bye (informal)",
+        "example_ru1": "Ну все, я пошел, пока!",
+        "example_en1": "Okay, I'm off, bye!",
+        "example_ru2": "Пока, до встречи!",
+        "example_en2": "Bye, see you later!"
+    },
+    {
+        "russian": "спасибо",
+        "english": "thank you",
+        "example_ru1": "Спасибо за помощь.",
+        "example_en1": "Thank you for your help.",
+        "example_ru2": "Большое спасибо!",
+        "example_en2": "Thank you very much!"
+    },
+    {
+        "russian": "пожалуйста",
+        "english": "please; you're welcome",
+        "example_ru1": "Дайте, пожалуйста, меню.",
+        "example_en1": "Please give me the menu.",
+        "example_ru2": "Спасибо! - Пожалуйста.",
+        "example_en2": "Thank you! - You're welcome."
+    },
+    {
+        "russian": "извините",
+        "english": "excuse me, sorry (formal)",
+        "example_ru1": "Извините, вы не подскажете, который час?",
+        "example_en1": "Excuse me, could you tell me the time?",
+        "example_ru2": "Извините за опоздание.",
+        "example_en2": "Sorry for being late."
+    },
+    {
+        "russian": "простите",
+        "english": "sorry, forgive me",
+        "example_ru1": "Простите, я не хотел вас обидеть.",
+        "example_en1": "Sorry, I didn't mean to offend you.",
+        "example_ru2": "Простите, это мое место.",
+        "example_en2": "Excuse me, this is my seat."
+    },
+    {
+        "russian": "как дела?",
+        "english": "how are you?",
+        "example_ru1": "Привет, как дела?",
+        "example_en1": "Hi, how are you?",
+        "example_ru2": "Как дела на работе?",
+        "example_en2": "How are things at work?"
+    },
+    {
+        "russian": "хорошо",
+        "english": "good, well, okay",
+        "example_ru1": "У меня все хорошо.",
+        "example_en1": "Everything is fine with me.",
+        "example_ru2": "Хорошо, я это сделаю.",
+        "example_en2": "Okay, I'll do it."
+    },
+    {
+        "russian": "плохо",
+        "english": "bad, poorly",
+        "example_ru1": "Я себя плохо чувствую.",
+        "example_en1": "I feel bad.",
+        "example_ru2": "Он плохо говорит по-французски.",
+        "example_en2": "He speaks French poorly."
+    },
+    {
+        "russian": "нормально",
+        "english": "okay, normal, fine",
+        "example_ru1": "Как дела? - Нормально.",
+        "example_en1": "How are you? - Fine.",
+        "example_ru2": "Это нормально.",
+        "example_en2": "This is normal."
+    },
+    {
+        "russian": "конечно",
+        "english": "of course, sure",
+        "example_ru1": "Ты поможешь мне? - Конечно.",
+        "example_en1": "Will you help me? - Of course.",
+        "example_ru2": "Конечно, это правда.",
+        "example_en2": "Of course, it's true."
+    },
+    {
+        "russian": "понятно",
+        "english": "I see, understood, clear",
+        "example_ru1": "Теперь мне все понятно.",
+        "example_en1": "Now everything is clear to me.",
+        "example_ru2": "Понятно, спасибо за объяснение.",
+        "example_en2": "I see, thanks for the explanation."
+    },
+    {
+        "russian": "может быть",
+        "english": "maybe, perhaps",
+        "example_ru1": "Может быть, он придет позже.",
+        "example_en1": "Maybe he will come later.",
+        "example_ru2": "Ты пойдешь в кино? - Может быть.",
+        "example_en2": "Are you going to the cinema? - Perhaps."
+    },
+    {
+        "russian": "доброе утро",
+        "english": "good morning",
+        "example_ru1": "Доброе утро, мир!",
+        "example_en1": "Good morning, world!",
+        "example_ru2": "Доброе утро, как спалось?",
+        "example_en2": "Good morning, how did you sleep?"
+    },
+    {
+        "russian": "добрый день",
+        "english": "good afternoon",
+        "example_ru1": "Добрый день, господа.",
+        "example_en1": "Good afternoon, gentlemen.",
+        "example_ru2": "Добрый день! Рад вас видеть.",
+        "example_en2": "Good afternoon! Glad to see you."
+    },
+    {
+        "russian": "добрый вечер",
+        "english": "good evening",
+        "example_ru1": "Добрый вечер, дамы и господа.",
+        "example_en1": "Good evening, ladies and gentlemen.",
+        "example_ru2": "Добрый вечер, чем могу помочь?",
+        "example_en2": "Good evening, how can I help?"
+    },
+    {
+        "russian": "семья",
+        "english": "family",
+        "example_ru1": "У меня большая семья.",
+        "example_en1": "I have a big family.",
+        "example_ru2": "Семья - это самое главное.",
+        "example_en2": "Family is the most important thing."
+    },
+    {
+        "russian": "брат",
+        "english": "brother",
+        "example_ru1": "Это мой старший брат.",
+        "example_en1": "This is my older brother.",
+        "example_ru2": "У меня есть брат и сестра.",
+        "example_en2": "I have a brother and a sister."
+    },
+    {
+        "russian": "сестра",
+        "english": "sister",
+        "example_ru1": "Моя сестра живет в другом городе.",
+        "example_en1": "My sister lives in another city.",
+        "example_ru2": "Как зовут твою младшую сестру?",
+        "example_en2": "What is your younger sister's name?"
+    },
+    {
+        "russian": "сын",
+        "english": "son",
+        "example_ru1": "Мой сын ходит в школу.",
+        "example_en1": "My son goes to school.",
+        "example_ru2": "Сколько лет вашему сыну?",
+        "example_en2": "How old is your son?"
+    },
+    {
+        "russian": "дочь",
+        "english": "daughter",
+        "example_ru1": "Его дочь учится в университете.",
+        "example_en1": "His daughter studies at the university.",
+        "example_ru2": "У них родилась дочь.",
+        "example_en2": "A daughter was born to them."
+    },
+    {
+        "russian": "муж",
+        "english": "husband",
+        "example_ru1": "Мой муж на работе.",
+        "example_en1": "My husband is at work.",
+        "example_ru2": "Она любит своего мужа.",
+        "example_en2": "She loves her husband."
+    },
+    {
+        "russian": "жена",
+        "english": "wife",
+        "example_ru1": "Его жена - врач.",
+        "example_en1": "His wife is a doctor.",
+        "example_ru2": "Где твоя жена?",
+        "example_en2": "Where is your wife?"
+    },
+    {
+        "russian": "родители",
+        "english": "parents",
+        "example_ru1": "Мои родители живут за городом.",
+        "example_en1": "My parents live outside the city.",
+        "example_ru2": "Нужно уважать своих родителей.",
+        "example_en2": "One must respect one's parents."
+    },
+    {
+        "russian": "утро",
+        "english": "morning",
+        "example_ru1": "Я люблю бегать по утрам.",
+        "example_en1": "I like to run in the mornings.",
+        "example_ru2": "Утро вечера мудренее.",
+        "example_en2": "The morning is wiser than the evening (proverb)."
+    },
+    {
+        "russian": "вечер",
+        "english": "evening",
+        "example_ru1": "Что ты делаешь сегодня вечером?",
+        "example_en1": "What are you doing this evening?",
+        "example_ru2": "Был теплый летний вечер.",
+        "example_en2": "It was a warm summer evening."
+    },
+    {
+        "russian": "погода",
+        "english": "weather",
+        "example_ru1": "Какая сегодня погода?",
+        "example_en1": "What's the weather like today?",
+        "example_ru2": "Погода испортилась.",
+        "example_en2": "The weather has turned bad."
+    },
+    {
+        "russian": "солнце",
+        "english": "sun",
+        "example_ru1": "Сегодня ярко светит солнце.",
+        "example_en1": "The sun is shining brightly today.",
+        "example_ru2": "Я люблю загорать на солнце.",
+        "example_en2": "I love to sunbathe in the sun."
+    },
+    {
+        "russian": "дождь",
+        "english": "rain",
+        "example_ru1": "На улице идет дождь.",
+        "example_en1": "It's raining outside.",
+        "example_ru2": "Я попал под сильный дождь.",
+        "example_en2": "I got caught in a heavy rain."
+    },
+    {
+        "russian": "снег",
+        "english": "snow",
+        "example_ru1": "Зимой в России идет снег.",
+        "example_en1": "In winter it snows in Russia.",
+        "example_ru2": "Дети играют в снежки.",
+        "example_en2": "The children are playing snowballs."
+    },
+    {
+        "russian": "ветер",
+        "english": "wind",
+        "example_ru1": "Сегодня сильный ветер.",
+        "example_en1": "There is a strong wind today.",
+        "example_ru2": "Ветер срывал листья с деревьев.",
+        "example_en2": "The wind was tearing leaves from the trees."
+    },
+    {
+        "russian": "небо",
+        "english": "sky",
+        "example_ru1": "Небо сегодня голубое и ясное.",
+        "example_en1": "The sky is blue and clear today.",
+        "example_ru2": "Птицы летят высоко в небе.",
+        "example_en2": "Birds are flying high in the sky."
+    },
+    {
+        "russian": "земля",
+        "english": "earth, ground, land",
+        "example_ru1": "Космонавты смотрят на Землю из космоса.",
+        "example_en1": "Cosmonauts look at the Earth from space.",
+        "example_ru2": "Он упал на землю.",
+        "example_en2": "He fell to the ground."
+    },
+    {
+        "russian": "огонь",
+        "english": "fire",
+        "example_ru1": "Не играй с огнем.",
+        "example_en1": "Don't play with fire.",
+        "example_ru2": "Мы сидели у огня и пели песни.",
+        "example_en2": "We sat by the fire and sang songs."
+    },
+    {
+        "russian": "воздух",
+        "english": "air",
+        "example_ru1": "Мне нужен свежий воздух.",
+        "example_en1": "I need some fresh air.",
+        "example_ru2": "В горах чистый воздух.",
+        "example_en2": "The air is clean in the mountains."
+    },
+    {
+        "russian": "еда",
+        "english": "food",
+        "example_ru1": "Какая твоя любимая еда?",
+        "example_en1": "What is your favorite food?",
+        "example_ru2": "В этом ресторане вкусная еда.",
+        "example_en2": "The food in this restaurant is delicious."
+    },
+    {
+        "russian": "хлеб",
+        "english": "bread",
+        "example_ru1": "Купи, пожалуйста, хлеб.",
+        "example_en1": "Please buy some bread.",
+        "example_ru2": "Я люблю свежий хлеб с маслом.",
+        "example_en2": "I love fresh bread with butter."
+    },
+    {
+        "russian": "молоко",
+        "english": "milk",
+        "example_ru1": "Дети должны пить молоко.",
+        "example_en1": "Children should drink milk.",
+        "example_ru2": "Я пью кофе с молоком.",
+        "example_en2": "I drink coffee with milk."
+    },
+    {
+        "russian": "чай",
+        "english": "tea",
+        "example_ru1": "Хочешь чашку чая?",
+        "example_en1": "Would you like a cup of tea?",
+        "example_ru2": "В России любят пить чай с лимоном.",
+        "example_en2": "In Russia, they like to drink tea with lemon."
+    },
+    {
+        "russian": "кофе",
+        "english": "coffee",
+        "example_ru1": "Я пью кофе каждое утро.",
+        "example_en1": "I drink coffee every morning.",
+        "example_ru2": "Мне, пожалуйста, черный кофе без сахара.",
+        "example_en2": "A black coffee with no sugar for me, please."
+    },
+    {
+        "russian": "сахар",
+        "english": "sugar",
+        "example_ru1": "Ты пьешь чай с сахаром?",
+        "example_en1": "Do you drink tea with sugar?",
+        "example_ru2": "В этом торте слишком много сахара.",
+        "example_en2": "There is too much sugar in this cake."
+    },
+    {
+        "russian": "соль",
+        "english": "salt",
+        "example_ru1": "Передай, пожалуйста, соль.",
+        "example_en1": "Pass the salt, please.",
+        "example_ru2": "Суп нужно посолить.",
+        "example_en2": "The soup needs salt."
+    },
+    {
+        "russian": "мясо",
+        "english": "meat",
+        "example_ru1": "Я не ем мясо.",
+        "example_en1": "I don't eat meat.",
+        "example_ru2": "Какое мясо вы предпочитаете: говядину или свинину?",
+        "example_en2": "What meat do you prefer: beef or pork?"
+    },
+    {
+        "russian": "рыба",
+        "english": "fish",
+        "example_ru1": "Я люблю есть жареную рыбу.",
+        "example_en1": "I like to eat fried fish.",
+        "example_ru2": "В озере много рыбы.",
+        "example_en2": "There are a lot of fish in the lake."
+    },
+    {
+        "russian": "овощи",
+        "english": "vegetables",
+        "example_ru1": "Нужно есть больше овощей и фруктов.",
+        "example_en1": "You need to eat more vegetables and fruits.",
+        "example_ru2": "Я купил свежие овощи на рынке.",
+        "example_en2": "I bought fresh vegetables at the market."
+    },
+    {
+        "russian": "фрукты",
+        "english": "fruit",
+        "example_ru1": "Какие твои любимые фрукты?",
+        "example_en1": "What are your favorite fruits?",
+        "example_ru2": "Летом много свежих фруктов.",
+        "example_en2": "There is a lot of fresh fruit in the summer."
+    },
+    {
+        "russian": "школа",
+        "english": "school",
+        "example_ru1": "Мои дети ходят в школу.",
+        "example_en1": "My children go to school.",
+        "example_ru2": "Я окончил школу десять лет назад.",
+        "example_en2": "I graduated from school ten years ago."
+    },
+    {
+        "russian": "университет",
+        "english": "university",
+        "example_ru1": "Она учится в университете.",
+        "example_en1": "She studies at the university.",
+        "example_ru2": "Московский государственный университет - один из лучших в мире.",
+        "example_en2": "Moscow State University is one of the best in the world."
+    },
+    {
+        "russian": "учитель",
+        "english": "teacher",
+        "example_ru1": "Мой первый учитель был очень добрым.",
+        "example_en1": "My first teacher was very kind.",
+        "example_ru2": "Он работает учителем в школе.",
+        "example_en2": "He works as a teacher at a school."
+    },
+    {
+        "russian": "студент",
+        "english": "student (university)",
+        "example_ru1": "Я студент второго курса.",
+        "example_en1": "I am a second-year student.",
+        "example_ru2": "В этой аудитории много студентов.",
+        "example_en2": "There are many students in this lecture hall."
+    },
+    {
+        "russian": "врач",
+        "english": "doctor",
+        "example_ru1": "Мне нужно к врачу.",
+        "example_en1": "I need to see a doctor.",
+        "example_ru2": "Моя мама работает врачом.",
+        "example_en2": "My mom works as a doctor."
+    },
+    {
+        "russian": "больница",
+        "english": "hospital",
+        "example_ru1": "Его отвезли в больницу.",
+        "example_en1": "He was taken to the hospital.",
+        "example_ru2": "Эта больница новая и современная.",
+        "example_en2": "This hospital is new and modern."
+    },
+    {
+        "russian": "магазин",
+        "english": "store, shop",
+        "example_ru1": "Я иду в магазин за продуктами.",
+        "example_en1": "I'm going to the store for groceries.",
+        "example_ru2": "Магазин открывается в девять часов.",
+        "example_en2": "The store opens at nine o'clock."
+    },
+    {
+        "russian": "деньги",
+        "english": "money",
+        "example_ru1": "У меня нет с собой наличных денег.",
+        "example_en1": "I don't have any cash with me.",
+        "example_ru2": "Деньги - не главное в жизни.",
+        "example_en2": "Money is not the most important thing in life."
+    },
+    {
+        "russian": "цена",
+        "english": "price, cost",
+        "example_ru1": "Какая цена у этого платья?",
+        "example_en1": "What is the price of this dress?",
+        "example_ru2": "Цены на бензин снова выросли.",
+        "example_en2": "Gas prices have risen again."
+    },
+    {
+        "russian": "машина",
+        "english": "car, machine",
+        "example_ru1": "Я купил новую машину.",
+        "example_en1": "I bought a new car.",
+        "example_ru2": "Стиральная машина сломалась.",
+        "example_en2": "The washing machine broke."
+    },
+    {
+        "russian": "дорога",
+        "english": "road, way",
+        "example_ru1": "Эта дорога ведет в город.",
+        "example_en1": "This road leads to the city.",
+        "example_ru2": "В добрый путь! / Счастливой дороги!",
+        "example_en2": "Have a good trip!"
+    },
+    {
+        "russian": "улица",
+        "english": "street",
+        "example_ru1": "На какой улице ты живешь?",
+        "example_en1": "What street do you live on?",
+        "example_ru2": "На улицах много людей.",
+        "example_en2": "There are many people on the streets."
+    },
+    {
+        "russian": "окно",
+        "english": "window",
+        "example_ru1": "Открой, пожалуйста, окно.",
+        "example_en1": "Please open the window.",
+        "example_ru2": "Я люблю смотреть в окно, когда идет дождь.",
+        "example_en2": "I like to look out the window when it's raining."
+    },
+    {
+        "russian": "дверь",
+        "english": "door",
+        "example_ru1": "Закрой дверь, пожалуйста.",
+        "example_en1": "Close the door, please.",
+        "example_ru2": "Кто-то стучит в дверь.",
+        "example_en2": "Someone is knocking at the door."
+    },
+    {
+        "russian": "комната",
+        "english": "room",
+        "example_ru1": "Это моя комната.",
+        "example_en1": "This is my room.",
+        "example_ru2": "В квартире три комнаты.",
+        "example_en2": "The apartment has three rooms."
+    },
+    {
+        "russian": "квартира",
+        "english": "apartment, flat",
+        "example_ru1": "Я снимаю квартиру в центре города.",
+        "example_en1": "I rent an apartment in the city center.",
+        "example_ru2": "У них очень уютная квартира.",
+        "example_en2": "They have a very cozy apartment."
+    },
+    {
+        "russian": "телефон",
+        "english": "telephone",
+        "example_ru1": "Мой телефон разрядился.",
+        "example_en1": "My phone battery is dead.",
+        "example_ru2": "Какой у тебя номер телефона?",
+        "example_en2": "What is your phone number?"
+    },
+    {
+        "russian": "компьютер",
+        "english": "computer",
+        "example_ru1": "Я работаю за компьютером весь день.",
+        "example_en1": "I work on the computer all day.",
+        "example_ru2": "Мне нужен новый компьютер.",
+        "example_en2": "I need a new computer."
+    },
+    {
+        "russian": "интернет",
+        "english": "internet",
+        "example_ru1": "У меня дома нет интернета.",
+        "example_en1": "I don't have internet at home.",
+        "example_ru2": "Информацию можно найти в интернете.",
+        "example_en2": "Information can be found on the internet."
+    },
+    {
+        "russian": "музыка",
+        "english": "music",
+        "example_ru1": "Какую музыку ты слушаешь?",
+        "example_en1": "What kind of music do you listen to?",
+        "example_ru2": "Я люблю слушать классическую музыку.",
+        "example_en2": "I like to listen to classical music."
+    },
+    {
+        "russian": "кино",
+        "english": "cinema, movie",
+        "example_ru1": "Пойдем в кино сегодня вечером?",
+        "example_en1": "Shall we go to the cinema tonight?",
+        "example_ru2": "Это мое любимое кино.",
+        "example_en2": "This is my favorite movie."
+    },
+    {
+        "russian": "театр",
+        "english": "theater",
+        "example_ru1": "Я люблю ходить в театр.",
+        "example_en1": "I love going to the theater.",
+        "example_ru2": "Большой театр находится в Москве.",
+        "example_en2": "The Bolshoi Theater is in Moscow."
+    },
+    {
+        "russian": "музей",
+        "english": "museum",
+        "example_ru1": "В Санкт-Петербурге много музеев.",
+        "example_en1": "There are many museums in St. Petersburg.",
+        "example_ru2": "Мы ходили в исторический музей.",
+        "example_en2": "We went to the history museum."
+    },
+    {
+        "russian": "парк",
+        "english": "park",
+        "example_ru1": "Давай погуляем в парке.",
+        "example_en1": "Let's take a walk in the park.",
+        "example_ru2": "Рядом с моим домом есть большой парк.",
+        "example_en2": "There is a large park near my house."
+    },
+    {
+        "russian": "лес",
+        "english": "forest, woods",
+        "example_ru1": "Мы пошли в лес за грибами.",
+        "example_en1": "We went to the forest to pick mushrooms.",
+        "example_ru2": "Я люблю гулять по лесу.",
+        "example_en2": "I love walking in the forest."
+    },
+    {
+        "russian": "река",
+        "english": "river",
+        "example_ru1": "Волга - самая длинная река в Европе.",
+        "example_en1": "The Volga is the longest river in Europe.",
+        "example_ru2": "Летом мы купаемся в реке.",
+        "example_en2": "In the summer, we swim in the river."
+    },
+    {
+        "russian": "море",
+        "english": "sea",
+        "example_ru1": "Я хочу поехать на море.",
+        "example_en1": "I want to go to the sea.",
+        "example_ru2": "Черное море очень теплое летом.",
+        "example_en2": "The Black Sea is very warm in the summer."
+    },
+    {
+        "russian": "озеро",
+        "english": "lake",
+        "example_ru1": "Байкал - самое глубокое озеро в мире.",
+        "example_en1": "Baikal is the deepest lake in the world.",
+        "example_ru2": "Мы отдыхали на озере.",
+        "example_en2": "We were vacationing at the lake."
+    },
+    {
+        "russian": "гора",
+        "english": "mountain",
+        "example_ru1": "Альпинисты покорили высокую гору.",
+        "example_en1": "The climbers conquered the high mountain.",
+        "example_ru2": "Зимой мы катаемся на лыжах в горах.",
+        "example_en2": "In winter we go skiing in the mountains."
+    },
+    {
+        "russian": "цвет",
+        "english": "color",
+        "example_ru1": "Какой твой любимый цвет?",
+        "example_en1": "What is your favorite color?",
+        "example_ru2": "Мне нравится этот цвет.",
+        "example_en2": "I like this color."
+    },
+    {
+        "russian": "синий",
+        "english": "dark blue",
+        "example_ru1": "У нее синее платье.",
+        "example_en1": "She has a blue dress.",
+        "example_ru2": "Море было темно-синего цвета.",
+        "example_en2": "The sea was a dark blue color."
+    },
+    {
+        "russian": "зеленый",
+        "english": "green",
+        "example_ru1": "Трава зеленая.",
+        "example_en1": "The grass is green.",
+        "example_ru2": "Я купил зеленую футболку.",
+        "example_en2": "I bought a green t-shirt."
+    },
+    {
+        "russian": "желтый",
+        "english": "yellow",
+        "example_ru1": "Солнце желтое.",
+        "example_en1": "The sun is yellow.",
+        "example_ru2": "Осенью листья становятся желтыми.",
+        "example_en2": "In autumn, the leaves turn yellow."
+    },
+    {
+        "russian": "оранжевый",
+        "english": "orange",
+        "example_ru1": "Апельсин оранжевого цвета.",
+        "example_en1": "An orange is orange in color.",
+        "example_ru2": "Мне нравится твой оранжевый шарф.",
+        "example_en2": "I like your orange scarf."
+    },
+    {
+        "russian": "фиолетовый",
+        "english": "purple, violet",
+        "example_ru1": "Фиалки фиолетового цвета.",
+        "example_en1": "Violets are purple.",
+        "example_ru2": "Она покрасила волосы в фиолетовый цвет.",
+        "example_en2": "She dyed her hair purple."
+    },
+    {
+        "russian": "коричневый",
+        "english": "brown",
+        "example_ru1": "У него коричневые ботинки.",
+        "example_en1": "He has brown shoes.",
+        "example_ru2": "Медведь коричневого цвета.",
+        "example_en2": "A bear is brown."
+    },
+    {
+        "russian": "серый",
+        "english": "gray",
+        "example_ru1": "Сегодня серое небо.",
+        "example_en1": "The sky is gray today.",
+        "example_ru2": "Мышь серая.",
+        "example_en2": "The mouse is gray."
+    },
+    {
+        "russian": "розовый",
+        "english": "pink",
+        "example_ru1": "Она любит розовый цвет.",
+        "example_en1": "She loves the color pink.",
+        "example_ru2": "У маленькой девочки розовое платье.",
+        "example_en2": "The little girl has a pink dress."
+    },
+    {
+        "russian": "голубой",
+        "english": "light blue",
+        "example_ru1": "У него голубые глаза.",
+        "example_en1": "He has blue eyes.",
+        "example_ru2": "Небо сегодня ясное и голубое.",
+        "example_en2": "The sky is clear and light blue today."
+    },
+    {
+        "russian": "сегодня",
+        "english": "today",
+        "example_ru1": "Что ты делаешь сегодня?",
+        "example_en1": "What are you doing today?",
+        "example_ru2": "Сегодня хорошая погода.",
+        "example_en2": "The weather is good today."
+    },
+    {
+        "russian": "вчера",
+        "english": "yesterday",
+        "example_ru1": "Я видел его вчера.",
+        "example_en1": "I saw him yesterday.",
+        "example_ru2": "Что ты делал вчера вечером?",
+        "example_en2": "What did you do yesterday evening?"
+    },
+    {
+        "russian": "завтра",
+        "english": "tomorrow",
+        "example_ru1": "Увидимся завтра.",
+        "example_en1": "See you tomorrow.",
+        "example_ru2": "Завтра будет новый день.",
+        "example_en2": "Tomorrow will be a new day."
+    },
+    {
+        "russian": "сейчас",
+        "english": "now, right now",
+        "example_ru1": "Я занят сейчас.",
+        "example_en1": "I am busy right now.",
+        "example_ru2": "Сейчас или никогда.",
+        "example_en2": "Now or never."
+    },
+    {
+        "russian": "потом",
+        "english": "then, later, afterwards",
+        "example_ru1": "Сначала работа, потом отдых.",
+        "example_en1": "First work, then rest.",
+        "example_ru2": "Я позвоню тебе потом.",
+        "example_en2": "I will call you later."
+    },
+    {
+        "russian": "всегда",
+        "english": "always",
+        "example_ru1": "Он всегда опаздывает.",
+        "example_en1": "He is always late.",
+        "example_ru2": "Я всегда буду помнить это.",
+        "example_en2": "I will always remember this."
+    },
+    {
+        "russian": "никогда",
+        "english": "never",
+        "example_ru1": "Я никогда не был в Африке.",
+        "example_en1": "I have never been to Africa.",
+        "example_ru2": "Никогда не говори никогда.",
+        "example_en2": "Never say never."
+    },
+    {
+        "russian": "иногда",
+        "english": "sometimes",
+        "example_ru1": "Иногда я хожу в кино один.",
+        "example_en1": "Sometimes I go to the cinema alone.",
+        "example_ru2": "Иногда идет дождь.",
+        "example_en2": "Sometimes it rains."
+    },
+    {
+        "russian": "часто",
+        "english": "often, frequently",
+        "example_ru1": "Я часто вижу его в парке.",
+        "example_en1": "I often see him in the park.",
+        "example_ru2": "Как часто ты ходишь в спортзал?",
+        "example_en2": "How often do you go to the gym?"
+    },
+    {
+        "russian": "редко",
+        "english": "rarely, seldom",
+        "example_ru1": "Мы редко встречаемся.",
+        "example_en1": "We rarely meet.",
+        "example_ru2": "Он очень редко улыбается.",
+        "example_en2": "He very seldom smiles."
+    },
+    {
+        "russian": "быстро",
+        "english": "fast, quickly",
+        "example_ru1": "Он бегает очень быстро.",
+        "example_en1": "He runs very fast.",
+        "example_ru2": "Время летит быстро.",
+        "example_en2": "Time flies quickly."
+    },
+    {
+        "russian": "медленно",
+        "english": "slowly",
+        "example_ru1": "Говорите, пожалуйста, медленнее.",
+        "example_en1": "Please speak more slowly.",
+        "example_ru2": "Черепаха двигается очень медленно.",
+        "example_en2": "A turtle moves very slowly."
+    },
+    {
+        "russian": "громко",
+        "english": "loudly",
+        "example_ru1": "Не говори так громко.",
+        "example_en1": "Don't speak so loudly.",
+        "example_ru2": "Музыка играла слишком громко.",
+        "example_en2": "The music was playing too loudly."
+    },
+    {
+        "russian": "тихо",
+        "english": "quietly, quiet",
+        "example_ru1": "Говори тише, ребенок спит.",
+        "example_en1": "Speak more quietly, the baby is sleeping.",
+        "example_ru2": "В библиотеке должно быть тихо.",
+        "example_en2": "It must be quiet in the library."
+    },
+    {
+        "russian": "легко",
+        "english": "easy, easily",
+        "example_ru1": "Это было легко.",
+        "example_en1": "It was easy.",
+        "example_ru2": "Он легко решает такие задачи.",
+        "example_en2": "He solves such problems easily."
+    },
+    {
+        "russian": "трудно",
+        "english": "difficult, hard",
+        "example_ru1": "Мне трудно это понять.",
+        "example_en1": "It's difficult for me to understand this.",
+        "example_ru2": "Было трудно, но мы справились.",
+        "example_en2": "It was hard, but we managed."
+    },
+    {
+        "russian": "рано",
+        "english": "early",
+        "example_ru1": "Я встаю очень рано.",
+        "example_en1": "I get up very early.",
+        "example_ru2": "Еще слишком рано.",
+        "example_en2": "It's still too early."
+    },
+    {
+        "russian": "поздно",
+        "english": "late",
+        "example_ru1": "Он пришел домой поздно.",
+        "example_en1": "He came home late.",
+        "example_ru2": "Уже поздно, пора спать.",
+        "example_en2": "It's late, time to sleep."
+    },
+    {
+        "russian": "далеко",
+        "english": "far",
+        "example_ru1": "Магазин находится далеко отсюда.",
+        "example_en1": "The store is far from here.",
+        "example_ru2": "Ты живешь далеко?",
+        "example_en2": "Do you live far away?"
+    },
+    {
+        "russian": "близко",
+        "english": "near, close",
+        "example_ru1": "Мой дом близко к метро.",
+        "example_en1": "My house is close to the metro.",
+        "example_ru2": "Подойди поближе.",
+        "example_en2": "Come closer."
+    },
+    {
+        "russian": "вместе",
+        "english": "together",
+        "example_ru1": "Давайте сделаем это вместе.",
+        "example_en1": "Let's do it together.",
+        "example_ru2": "Мы работаем вместе уже пять лет.",
+        "example_en2": "We have been working together for five years."
+    },
+    {
+        "russian": "отдельно",
+        "english": "separately",
+        "example_ru1": "Мы живем отдельно от родителей.",
+        "example_en1": "We live separately from our parents.",
+        "example_ru2": "Давайте обсудим это отдельно.",
+        "example_en2": "Let's discuss this separately."
+    },
+    {
+        "russian": "снова",
+        "english": "again",
+        "example_ru1": "Я рад снова вас видеть.",
+        "example_en1": "I am glad to see you again.",
+        "example_ru2": "Он снова опоздал.",
+        "example_en2": "He was late again."
+    },
+    {
+        "russian": "почти",
+        "english": "almost",
+        "example_ru1": "Я почти закончил.",
+        "example_en1": "I'm almost finished.",
+        "example_ru2": "Было почти полночь.",
+        "example_en2": "It was almost midnight."
+    },
+    {
+        "russian": "наверное",
+        "english": "probably, must be",
+        "example_ru1": "Он, наверное, дома.",
+        "example_en1": "He is probably at home.",
+        "example_ru2": "Наверное, пойдет дождь.",
+        "example_en2": "It will probably rain."
+    },
+    {
+        "russian": "конечно",
+        "english": "of course",
+        "example_ru1": "Ты придешь? - Конечно!",
+        "example_en1": "Will you come? - Of course!",
+        "example_ru2": "Конечно, я помогу тебе.",
+        "example_en2": "Of course I will help you."
+    },
+    {
+        "russian": "просто",
+        "english": "simply, just",
+        "example_ru1": "Это просто невероятно!",
+        "example_en1": "It's simply incredible!",
+        "example_ru2": "Я просто хотел спросить.",
+        "example_en2": "I just wanted to ask."
+    }
+]
+;
+    </script>
+    
+    <!-- Main Application Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get references to the HTML elements
+            const russianWordEl = document.getElementById('russian-word');
+            const englishWordEl = document.getElementById('english-word');
+            const exampleRu1El = document.getElementById('example-ru-1');
+            const exampleEn1El = document.getElementById('example-en-1');
+            const exampleRu2El = document.getElementById('example-ru-2');
+            const exampleEn2El = document.getElementById('example-en-2');
+            const newWordBtn = document.getElementById('new-word-btn');
+            const flashcardEl = document.getElementById('flashcard');
+
+            let lastWordIndex = -1;
+
+            // Function to get a random word from the vocabulary list
+            function getRandomWord() {
+                let randomIndex;
+                // Ensure we don't show the same word twice in a row
+                do {
+                    randomIndex = Math.floor(Math.random() * vocabulary.length);
+                } while (vocabulary.length > 1 && randomIndex === lastWordIndex);
+                
+                lastWordIndex = randomIndex;
+                return vocabulary[randomIndex];
+            }
+
+            // Function to display a new word on the flashcard
+            function displayNewWord() {
+                const word = getRandomWord();
+
+                // Add a little animation
+                flashcardEl.style.transform = 'scale(0.95)';
+                flashcardEl.style.opacity = '0.5';
+
+                setTimeout(() => {
+                    russianWordEl.textContent = word.russian;
+                    englishWordEl.textContent = word.english;
+                    exampleRu1El.textContent = `1. ${word.example_ru1}`;
+                    exampleEn1El.textContent = word.example_en1;
+                    exampleRu2El.textContent = `2. ${word.example_ru2}`;
+                    exampleEn2El.textContent = word.example_en2;
+
+                    flashcardEl.style.transform = 'scale(1)';
+                    flashcardEl.style.opacity = '1';
+                }, 200);
+            }
+
+            // Event listener for the "New Word" button
+            newWordBtn.addEventListener('click', displayNewWord);
+
+            // Display the first word when the page loads
+            displayNewWord();
+        });
+    </script>
+
+</body>
+</html>
